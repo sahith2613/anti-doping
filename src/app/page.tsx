@@ -14,6 +14,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { GoogleGenerativeAI } from "@google/generative-ai"
+
+// Initialize the Gemini API client
+const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY!
+const genAI = new GoogleGenerativeAI(API_KEY)
+const model = genAI.getGenerativeModel({ model: "gemini-pro" })
 
 const contentItems = [
   { id: 1, title: "Introduction to Anti-Doping", type: "Video", duration: "10 min", category: "Basics" },
@@ -43,7 +49,6 @@ const languages = [
   { code: 'san', name: 'संस्कृत' },
   { code: 'ur', name: 'اردو' },
 ];
-
 
 const NavItem = ({ title, isActive, onClick }) => (
   <button
@@ -81,6 +86,7 @@ export default function Home() {
     { message: "Hello! How can I assist you with anti-doping information today?", isUser: false }
   ])
   const [currentMessage, setCurrentMessage] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
   const chatEndRef = useRef(null)
 
   useEffect(() => {
@@ -109,26 +115,24 @@ export default function Home() {
     setUserPreferences(prev => ({ ...prev, [key]: value }))
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (currentMessage.trim() === '') return
 
     setChatMessages(prev => [...prev, { message: currentMessage, isUser: true }])
     setCurrentMessage('')
+    setIsTyping(true)
 
-    // Simulated chatbot response
-    setTimeout(() => {
-      let botResponse = "I'm sorry, I don't have specific information about that. Can you please rephrase your question or ask about a different topic?"
-
-      if (currentMessage.toLowerCase().includes('prohibited substances')) {
-        botResponse = "For the most up-to-date list of prohibited substances, please refer to the WADA Prohibited List. It's important to check this list regularly as it's updated annually."
-      } else if (currentMessage.toLowerCase().includes('testing procedure')) {
-        botResponse = "The testing procedure typically involves providing a urine and/or blood sample. The sample is then split into A and B samples and sent to a WADA-accredited laboratory for analysis."
-      } else if (currentMessage.toLowerCase().includes('therapeutic use exemption') || currentMessage.toLowerCase().includes('tue')) {
-        botResponse = "A Therapeutic Use Exemption (TUE) allows an athlete to use a prohibited substance or method for a legitimate medical condition. You need to apply for a TUE before using the substance or method, except in emergency situations."
-      }
-
-      setChatMessages(prev => [...prev, { message: botResponse, isUser: false }])
-    }, 1000)
+    try {
+      const result = await model.generateContent(currentMessage)
+      const response = await result.response
+      const text = response.text()
+      setChatMessages(prev => [...prev, { message: text, isUser: false }])
+    } catch (error) {
+      console.error('Error generating response:', error)
+      setChatMessages(prev => [...prev, { message: "I'm sorry, I encountered an error. Please try again.", isUser: false }])
+    } finally {
+      setIsTyping(false)
+    }
   }
 
   const renderPersonalizedDashboard = () => (
@@ -594,6 +598,13 @@ export default function Home() {
             {chatMessages.map((msg, index) => (
               <ChatMessage key={index} message={msg.message} isUser={msg.isUser} />
             ))}
+            {isTyping && (
+              <div className="flex justify-start mb-4">
+                <div className="bg-secondary p-3 rounded-lg">
+                  <span className="animate-pulse">Typing...</span>
+                </div>
+              </div>
+            )}
             <div ref={chatEndRef} />
           </ScrollArea>
           <div className="p-4 border-t">
