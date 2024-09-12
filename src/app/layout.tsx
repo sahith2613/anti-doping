@@ -4,7 +4,7 @@
 // import '.src/app/globals.css'; // Use a relative path based on the location of the file
 
 // import './src/app/globals.css'
-import 'ssih/anti-doping/src/globals.css'
+// import 'ssih/anti-doping/src/globals.css';
 
 import { Inter } from 'next/font/google';
 
