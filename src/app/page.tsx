@@ -27,17 +27,23 @@ const contentItems = [
 ]
 
 const languages = [
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Español' },
-  { code: 'fr', name: 'Français' },
-  { code: 'de', name: 'Deutsch' },
-  { code: 'it', name: 'Italiano' },
-  { code: 'pt', name: 'Português' },
-  { code: 'ru', name: 'Русский' },
-  { code: 'zh', name: '中文' },
-  { code: 'ja', name: '日本語' },
-  { code: 'ko', name: '한국어' },
-]
+  { code: 'hi', name: 'हिन्दी' },
+  { code: 'bn', name: 'বাংলা' },
+  { code: 'te', name: 'తెలుగు' },
+  { code: 'ta', name: 'தமிழ்' },
+  { code: 'mr', name: 'मराठी' },
+  { code: 'gu', name: 'ગુજરાતી' },
+  { code: 'kn', name: 'ಕನ್ನಡ' },
+  { code: 'ml', name: 'മലയാളം' },
+  { code: 'or', name: 'ଓଡ଼ିଆ' },
+  { code: 'pa', name: 'ਪੰਜਾਬੀ' },
+  { code: 'as', name: 'অসমীয়া' },
+  { code: 'sd', name: 'سنڌي' },
+  { code: 'bh', name: 'भोजपुरी' },
+  { code: 'san', name: 'संस्कृत' },
+  { code: 'ur', name: 'اردو' },
+];
+
 
 const NavItem = ({ title, isActive, onClick }) => (
   <button
